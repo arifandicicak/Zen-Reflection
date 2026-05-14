@@ -55,7 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // LOGIKA UNTUK CHAT BIASA
     if (type === "chat" && messages && messages.length > 0) {
       const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
+        model: "gemini-3-flash-preview",
         systemInstruction: ZEN_SYSTEM_PROMPT,
       });
 
