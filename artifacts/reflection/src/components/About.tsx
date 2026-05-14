@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Code2, Smartphone, Sparkles, BookOpen, Trophy, MapPin } from "lucide-react";
+import { Smartphone, Sparkles, BookOpen, Trophy, MapPin } from "lucide-react";
 
 export function About() {
   return (
@@ -68,10 +68,12 @@ export function About() {
               <div className="space-y-4 text-gray-600 leading-relaxed text-sm md:text-base">
                 <p>
                   Hello! I'm Arifandi, but in the digital world I'm known as <strong>Jangkrik</strong>. My journey didn't start with an expensive gaming PC, but with a smartphone in my school uniform pocket.
+                </p>
                 <p>
-                  I believe that skills don't require a large monitor, they only require a broad will. From coding the indie game "Mala" to breaking into the National Informatics Olympiad (OSN), I've done it all.  </p>
+                  I believe that skills don't require a large monitor, they only require a broad will. From coding the indie game &quot;Mala&quot; to breaking into the National Informatics Olympiad (OSN), I've done it all.
+                </p>
                 <p>
-                  Now, my focus is on building a “Digital Monk”—an AI system that is not only smart, but also brings peace and helps mental health for fellow teenagers.Now, my focus is on building a “Digital Monk”—an AI system that is not only smart, but also brings peace and helps mental health for fellow teenagers.
+                  Now, my focus is on building a &ldquo;Digital Monk&rdquo;&mdash;an AI system that is not only smart, but also brings peace and helps mental health for fellow teenagers.
                 </p>
               </div>
 
@@ -83,7 +85,7 @@ export function About() {
                 </div>
                 <div className="p-3 rounded-xl bg-[#F1F8E9] border border-[#C8E6C9] flex items-center gap-3">
                   <BookOpen size={20} className="text-[#4CAF50]" />
-                  <span className="text-xs font-semibold text-[#1B5E20]">Dicoding Indonesia Certified</span>
+                  <span className="text-xs font-semibold text-[#1B5E20]">Dicoding Certified</span>
                 </div>
               </div>
             </motion.div>
