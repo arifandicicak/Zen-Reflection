@@ -1,29 +1,32 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Github, ExternalLink } from "lucide-react";
+import { ExternalLink, Gamepad2, Sparkles, Layout } from "lucide-react";
 
 const projects = [
   {
     title: "Mala",
-    description: "A calming puzzle game designed to help users destress. Built with mobile-first controls and soothing visuals.",
-    tech: ["React", "Framer Motion", "Tailwind"],
-    link: "#",
-    color: "bg-blue-50",
+    description: "A 2D action-RPG platformer game. Experience a world built with mobile-first controls and soothing aesthetics.",
+    tech: ["GDScript", "C#", "Game Design"],
+    link: "https://ariikksss.itch.io/mala",
+    color: "bg-[#E8F5E9]",
+    icon: <Gamepad2 className="text-[#4CAF50]" size={40} />,
   },
   {
     title: "Jangkrik AI",
-    description: "A personal assistant bot that helps manage schedules and provides coding tips for smartphone development.",
-    tech: ["TypeScript", "OpenAI", "Node.js"],
-    link: "#",
-    color: "bg-emerald-50",
+    description: "An advanced AI-powered personal assistant and portfolio that helps mobile developers master coding.",
+    tech: ["TypeScript", "Gemini AI", "Node.js"],
+    link: "https://jangkrik02.vercel.app/",
+    color: "bg-[#F1F8E9]",
+    icon: <Sparkles className="text-[#87EBA0]" size={40} />,
   },
   {
     title: "Reflection",
-    description: "The portfolio and Zen Coach platform you are currently exploring. A serene digital space.",
-    tech: ["React", "React Query", "Tailwind"],
-    link: "#",
-    color: "bg-purple-50",
+    description: "The Zen Coach & Portfolio platform you're exploring. Designed for mental wellness and professional showcasing.",
+    tech: ["React", "Framer Motion", "Tailwind"],
+    link: "#", // Current site
+    color: "bg-white",
+    icon: <Layout className="text-gray-400" size={40} />,
   },
 ];
 
@@ -42,7 +45,7 @@ const itemVariants = {
 
 export function Projects() {
   return (
-    <section id="projects" className="py-24">
+    <section id="projects" className="py-24 bg-white">
       <div className="container mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -51,11 +54,11 @@ export function Projects() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Selected Works</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-            Things I've built from my smartphone.
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#2D4F3F]">Selected Works</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto mb-6">
+            Innovative digital experiences crafted entirely from a smartphone.
           </p>
-          <div className="w-16 h-1 bg-primary mx-auto rounded-full" />
+          <div className="w-20 h-1.5 bg-[#87EBA0] mx-auto rounded-full" />
         </motion.div>
 
         <motion.div
@@ -67,31 +70,45 @@ export function Projects() {
         >
           {projects.map((project, index) => (
             <motion.div key={index} variants={itemVariants}>
-              <Card className="overflow-hidden bg-white/70 backdrop-blur-md border-border/50 h-full flex flex-col group hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
-                <div className={`h-48 ${project.color} relative overflow-hidden`}>
-                  <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
-                  <div className="absolute inset-0 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-500">
-                    <span className="text-4xl font-bold text-foreground/20">{project.title.charAt(0)}</span>
-                  </div>
+              <Card className="overflow-hidden bg-white/80 backdrop-blur-sm border border-[#E8F5E9] h-full flex flex-col group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 rounded-[2rem]">
+                {/* Project Header/Icon Area */}
+                <div className={`h-48 ${project.color} relative overflow-hidden flex items-center justify-center`}>
+                  <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+                  <motion.div 
+                    whileHover={{ rotate: 10, scale: 1.1 }}
+                    className="z-10 bg-white/50 p-6 rounded-3xl backdrop-blur-sm shadow-sm"
+                  >
+                    {project.icon}
+                  </motion.div>
                 </div>
                 
-                <div className="p-6 flex flex-col flex-1">
-                  <h3 className="text-xl font-bold text-foreground mb-2">{project.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-1">
+                <div className="p-8 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-[#1B5E20] mb-2">{project.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1">
                     {project.description}
                   </p>
                   
-                  <div className="flex flex-wrap gap-2 mb-6">
+                  <div className="flex flex-wrap gap-2 mb-8">
                     {project.tech.map((t, i) => (
-                      <span key={i} className="text-xs font-medium px-2 py-1 bg-muted text-muted-foreground rounded-md">
+                      <span key={i} className="text-[10px] uppercase tracking-wider font-bold px-3 py-1 bg-[#F1F8E9] text-[#4CAF50] rounded-lg border border-[#E8F5E9]">
                         {t}
                       </span>
                     ))}
                   </div>
 
-                  <Button variant="outline" className="w-full rounded-xl group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors">
-                    View Project <ExternalLink className="ml-2 w-4 h-4" />
-                  </Button>
+                  <a 
+                    href={project.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block w-full"
+                  >
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-12 rounded-xl border-[#87EBA0] text-[#2D4F3F] font-bold hover:bg-[#4CAF50] hover:text-white hover:border-[#4CAF50] transition-all duration-300 active:scale-95 shadow-sm"
+                    >
+                      View Project <ExternalLink className="ml-2 w-4 h-4" />
+                    </Button>
+                  </a>
                 </div>
               </Card>
             </motion.div>
@@ -101,3 +118,4 @@ export function Projects() {
     </section>
   );
 }
+                      
