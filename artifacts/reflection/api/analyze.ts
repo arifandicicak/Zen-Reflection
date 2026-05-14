@@ -38,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Gunakan POST, Bro!" });
+    return res.status(405).json({ error: "Use POST, Bro!" });
   }
 
   try {
@@ -92,20 +92,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err: any) {
     console.error("ANALYZER ERROR:", err.message);
     
-    let userFriendlyMessage = "Zeno sedang bermeditasi sejenak... Coba lagi nanti ya.";
+    let userFriendlyMessage = "Zeno is meditating for a moment... Please try again later.";
     let errorType = "Zeno Error";
 
     const msg = err.message || "";
 
     // FILTER ERROR BIAR LEBIH MANUSIAWI
     if (msg.includes("429") || msg.includes("quota")) {
-      userFriendlyMessage = "Aduh Jangkrik, jatah gratisan Google Zeno sudah habis buat hari ini. Istirahat dulu ya, coba lagi nanti atau besok.";
-      errorType = "Kuota Habis";
+      userFriendlyMessage = "Oh dear, Zeno's freebies are gone for today. Take a break and try again later or tomorrow.";
+      errorType = "Quota Exhausted";
     } else if (msg.includes("API_KEY") || msg.includes("403")) {
-      userFriendlyMessage = "Kunci (API Key) Zeno bermasalah atau salah pasang di Vercel.";
-      errorType = "API Key Rusak";
+      userFriendlyMessage = "Zeno API Key is problematic or incorrectly installed in Vercel.";
+      errorType = "Corrupted API Key";
     } else if (msg.includes("location") || msg.includes("Region")) {
-      userFriendlyMessage = "Zeno diblokir wilayah! Gunakan VPN saat membuat API Key di Google AI Studio.";
+      userFriendlyMessage = "Zeno is region-blocked! Use a VPN when generating an API Key.";
       errorType = "Region Lock";
     }
 
