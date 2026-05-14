@@ -34,7 +34,7 @@ function Home() {
       </main>
       
       <footer className="py-8 text-center text-sm text-muted-foreground border-t border-border/50 bg-white/50">
-        <p> © Built with heart by Arifandi (Jangkrik). Coded on a smartphone.</p>
+        <p> © 2026 Built with heart by Arifandi (Jangkrik). Coded on a smartphone.</p>
       </footer>
     </div>
   );
