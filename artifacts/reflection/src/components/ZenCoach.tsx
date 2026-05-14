@@ -95,7 +95,7 @@ export function ZenCoach() {
 
       setMessages([...newMessages, { role: "assistant", content: data.reply }]);
     } catch (err: any) {
-      alert("Koneksi bermasalah: " + err.message);
+      alert("Connection problem: " + err.message);
     } finally {
       setIsPending(false);
     }
@@ -127,7 +127,7 @@ export function ZenCoach() {
       setSchedule(data);
       saveChecked({}); // Reset checklist
     } catch (err: any) {
-      alert("Gagal koneksi ke AI: " + err.message);
+      alert("Failed to connect to AI: " + err.message);
     } finally {
       setIsPending(false);
     }
@@ -171,7 +171,7 @@ export function ZenCoach() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Zeno</h3>
-                    <p className="text-xs text-muted-foreground">AI Zen Coach (Gemini 3 Power)</p>
+                    <p className="text-xs text-muted-foreground">AI Zen Coach</p>
                   </div>
                 </div>
 
