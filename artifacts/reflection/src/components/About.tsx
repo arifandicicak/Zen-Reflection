@@ -20,38 +20,43 @@ export function About() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Bagian Visual/Avatar */}
             <motion.div
+
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
               className="relative"
-            >
+              >
               <div className="aspect-square rounded-[2rem] overflow-hidden bg-[#E8F5E9] relative flex items-center justify-center border-4 border-white shadow-2xl">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/leaf.png')] opacity-10" />
-                
-                {/* Floating Elements Representing Small Screen Power */}
-                <motion.div
-                  animate={{ y: [0, -15, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="z-10 bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-xl border border-[#A5D6A7]"
-                >
-                  <Smartphone size={80} className="text-[#4CAF50]" />
-                  <motion.div 
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute -top-2 -right-2 bg-[#87EBA0] p-2 rounded-full"
+    
+                {/* FOTO MUKA LO DI SINI */}
+                <motion.img
+                  src="/codingcamp2026-5bef26bf-f53e-4c1d-96e9-c3008146228f.jpg"
+                  alt="Arifandi (Jangkrik)"
+                  className="z-10 w-full h-full object-cover rounded-[1.8rem]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1 }}
+                  />
+                {/* Efek Sparkles biar tetep ada aura AI nya */}
+                <motion.div 
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute top-4 right-4 z-20 bg-[#87EBA0] p-2 rounded-full shadow-lg"
                   >
-                    <Sparkles size={20} className="text-white" />
-                  </motion.div>
+                  <Sparkles size={24} className="text-white" />
                 </motion.div>
               </div>
-              
               {/* Badge Lokasi */}
-              <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-lg flex items-center gap-2 border border-[#E8F5E9]">
+              <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-lg flex items-center gap-2 border border-[#E8F5E9] z-30">
                 <MapPin size={18} className="text-red-400" />
                 <span className="text-sm font-bold text-gray-700">SMA N 1 Fakfak</span>
               </div>
             </motion.div>
+            
+            
+            
 
             {/* Bagian Cerita */}
             <motion.div
