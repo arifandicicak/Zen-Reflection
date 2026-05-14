@@ -21,17 +21,27 @@ When someone shares pain, bullying, or struggles:
 
 function getGemini() {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not set in Environment Variables");
+  }
   return new GoogleGenerativeAI(apiKey);
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
+  // --- BAGIAN TAMBAHAN UNTUK FIX CORS ---
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Handle preflight request browser
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  // --------------------------------------
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed. Use POST." });
+  }
 
   const { type, messages, concern } = req.body as {
     type: "chat" | "schedule";
@@ -42,6 +52,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const genAI = getGemini();
 
+    // LOGIKA UNTUK CHAT BIASA
     if (type === "chat" && messages && messages.length > 0) {
       const model = genAI.getGenerativeModel({
         model: "gemini-1.5-flash",
@@ -61,47 +72,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ reply });
     }
 
+    // LOGIKA UNTUK DAILY SCHEDULE
     if (type === "schedule" && concern) {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash",
+        systemInstruction: "You are a mindful wellness scheduler. Return ONLY valid JSON."
+      });
 
-      const prompt = `You are a mindful wellness scheduler. Based on this emotional concern or mental state: "${concern}"
-
-Create a calming daily schedule with 6-8 activities for mental recovery and wellbeing.
-Return ONLY valid JSON (no markdown, no code blocks) with this exact structure:
+      const prompt = `Based on this emotional concern: "${concern}", create a calming daily schedule (6-8 activities).
+Return ONLY a JSON object with this structure:
 {
-  "message": "A warm, encouraging 1-2 sentence message about this schedule",
+  "message": "A warm message",
   "items": [
-    {
-      "time": "06:00",
-      "activity": "Morning Breathing",
-      "duration": "5 min",
-      "category": "meditation",
-      "description": "Start the day with 4-7-8 breathing: inhale 4s, hold 7s, exhale 8s"
-    }
+    { "time": "HH:MM", "activity": "Name", "duration": "X min", "category": "meditation/rest/etc", "description": "Details" }
   ]
 }
-
-Categories must be one of: meditation, journaling, affirmation, movement, rest, social, creative
-Make each activity specific, practical, and achievable. Time format: HH:MM (24h).`;
+No markdown blocks, no extra text.`;
 
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
 
       try {
-        const cleaned = text
-          .replace(/^```json\n?/, "")
-          .replace(/\n?```$/, "")
-          .trim();
+        // Pembersihan output AI dari markdown ```json ... ```
+        const cleaned = text.replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(cleaned);
         return res.status(200).json(parsed);
-      } catch {
-        return res.status(500).json({ error: "Failed to parse AI response" });
+      } catch (parseError) {
+        console.error("JSON Parse Error:", text);
+        return res.status(500).json({ error: "AI sent invalid format" });
       }
     }
 
     return res.status(400).json({ error: "Invalid request type or missing fields" });
-  } catch (err) {
-    console.error("Analyze error:", err);
-    return res.status(500).json({ error: "AI service error" });
+  } catch (err: any) {
+    console.error("Analyze error:", err.message);
+    return res.status(500).json({ 
+      error: "AI Service Error", 
+      details: err.message 
+    });
   }
 }
