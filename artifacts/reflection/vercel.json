@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/analyze.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "buildCommand": "vite build",
+  "outputDirectory": "dist/public",
+  "framework": null
+}

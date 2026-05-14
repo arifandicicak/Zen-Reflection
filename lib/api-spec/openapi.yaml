@@ -1,15 +1,16 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Reflection Portfolio & Zen Coach API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: zen
+    description: AI Zen Coach operations
 paths:
   /healthz:
     get:
@@ -24,6 +25,45 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /zen/chat:
+    post:
+      operationId: zenChat
+      tags: [zen]
+      summary: Chat with AI Zen Coach
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ZenChatInput"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZenReply"
+
+  /zen/schedule:
+    post:
+      operationId: zenSchedule
+      tags: [zen]
+      summary: Generate a daily zen schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ZenScheduleInput"
+      responses:
+        "200":
+          description: Generated daily schedule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZenSchedule"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +74,63 @@ components:
       required:
         - status
 
+    ZenMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+
+    ZenChatInput:
+      type: object
+      required: [messages]
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ZenMessage"
+
+    ZenReply:
+      type: object
+      required: [reply]
+      properties:
+        reply:
+          type: string
+
+    ZenScheduleInput:
+      type: object
+      required: [concern]
+      properties:
+        concern:
+          type: string
+          description: The user's mental health concern or current emotional state
+
+    ZenScheduleItem:
+      type: object
+      required: [time, activity, duration, category]
+      properties:
+        time:
+          type: string
+        activity:
+          type: string
+        duration:
+          type: string
+        category:
+          type: string
+          enum: [meditation, journaling, affirmation, movement, rest, social, creative]
+        description:
+          type: string
+
+    ZenSchedule:
+      type: object
+      required: [items, message]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ZenScheduleItem"
+        message:
+          type: string
