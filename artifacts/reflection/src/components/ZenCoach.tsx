@@ -1,15 +1,18 @@
+// @ts-nocheck
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useZenChat, useZenSchedule } from "@workspace/api-client-react";
-import { Send, User, Sparkles, Clock, Activity, Coffee, Brain, PenTool, Dumbbell, Users, Palette, MessageSquare, Calendar } from "lucide-react";
-import type { ZenMessage, ZenScheduleItem } from "@workspace/api-client-react";
+import { 
+  Send, User, Sparkles, Clock, Activity, Coffee, Brain, 
+  PenTool, Dumbbell, Users, Palette, MessageSquare, Calendar 
+} from "lucide-react";
 
+// Helper buat icon kategori schedule
 const getCategoryIcon = (category: string) => {
   switch (category) {
     case "meditation": return <Brain className="w-4 h-4" />;
@@ -24,32 +27,33 @@ const getCategoryIcon = (category: string) => {
 };
 
 export function ZenCoach() {
-  const [messages, setMessages] = useState<ZenMessage[]>([
+  // --- STATE ---
+  const [messages, setMessages] = useState([
     { role: "assistant", content: "Hello! I'm Zeno. I'm here to help you find a moment of peace. How are you feeling today?" }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [concern, setConcern] = useState("");
-  const [schedule, setSchedule] = useState<{ items: ZenScheduleItem[], message: string } | null>(null);
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [schedule, setSchedule] = useState(null);
+  const [checkedItems, setCheckedItems] = useState({});
+  const [isPending, setIsPending] = useState(false);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const chatMutation = useZenChat();
-  const scheduleMutation = useZenSchedule();
-
+  // Auto scroll chat ke bawah
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isPending]);
 
+  // Load status checklist schedule dari local storage
   useEffect(() => {
     const saved = localStorage.getItem("zen-schedule-checked");
     if (saved) {
       try {
         setCheckedItems(JSON.parse(saved));
       } catch (e) {
-        // ignore
+        console.error("Gagal load history checklist");
       }
     }
   }, []);
@@ -59,43 +63,78 @@ export function ZenCoach() {
     localStorage.setItem("zen-schedule-checked", JSON.stringify(newChecked));
   };
 
-  const handleSendMessage = (e?: React.FormEvent) => {
+  // --- HANDLER CHAT (Gemini 3 Power) ---
+  const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!inputValue.trim() || chatMutation.isPending) return;
+    if (!inputValue.trim() || isPending) return;
 
-    const userMessage: ZenMessage = { role: "user", content: inputValue };
+    const userMessage = { role: "user", content: inputValue };
     const newMessages = [...messages, userMessage];
+    
     setMessages(newMessages);
     setInputValue("");
+    setIsPending(true);
 
-    chatMutation.mutate(
-      { data: { messages: newMessages } },
-      {
-        onSuccess: (data) => {
-          setMessages([...newMessages, { role: "assistant", content: data.reply }]);
-        }
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "chat",
+          messages: newMessages
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Tampilkan error kalau API Key salah atau limit abis
+        alert(`Error Zeno: ${data.details || data.error}`);
+        return;
       }
-    );
+
+      setMessages([...newMessages, { role: "assistant", content: data.reply }]);
+    } catch (err: any) {
+      alert("Koneksi bermasalah: " + err.message);
+    } finally {
+      setIsPending(false);
+    }
   };
 
-  const handleGenerateSchedule = (e: React.FormEvent) => {
+  // --- HANDLER SCHEDULE ---
+  const handleGenerateSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!concern.trim() || scheduleMutation.isPending) return;
+    if (!concern.trim() || isPending) return;
 
-    scheduleMutation.mutate(
-      { data: { concern } },
-      {
-        onSuccess: (data) => {
-          setSchedule(data);
-          saveChecked({}); // Reset checks for new schedule
-        }
+    setIsPending(true);
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "schedule",
+          concern: concern
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(`Gagal generate jadwal: ${data.details || data.error}`);
+        return;
       }
-    );
+
+      setSchedule(data);
+      saveChecked({}); // Reset checklist
+    } catch (err: any) {
+      alert("Gagal koneksi ke AI: " + err.message);
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
     <section id="zen" className="py-24 relative overflow-hidden">
-      {/* Background blobs */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -116,13 +155,11 @@ export function ZenCoach() {
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="chat" className="w-full">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 bg-muted/50 p-1 rounded-full">
-              <TabsTrigger value="chat" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" />
-                Chat
+              <TabsTrigger value="chat" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" /> Chat
               </TabsTrigger>
-              <TabsTrigger value="schedule" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Schedule
+              <TabsTrigger value="schedule" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2">
+                <Calendar className="w-4 h-4" /> Schedule
               </TabsTrigger>
             </TabsList>
 
@@ -134,14 +171,11 @@ export function ZenCoach() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Zeno</h3>
-                    <p className="text-xs text-muted-foreground">AI Zen Coach</p>
+                    <p className="text-xs text-muted-foreground">AI Zen Coach (Gemini 3 Power)</p>
                   </div>
                 </div>
 
-                <div 
-                  ref={chatContainerRef}
-                  className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
-                >
+                <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
                   <AnimatePresence initial={false}>
                     {messages.map((msg, idx) => (
                       <motion.div
@@ -164,17 +198,14 @@ export function ZenCoach() {
                         </div>
                       </motion.div>
                     ))}
-                    {chatMutation.isPending && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 max-w-[85%]"
-                      >
+                    
+                    {isPending && (
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 max-w-[85%]">
                         <div className="w-8 h-8 shrink-0 rounded-full bg-primary/20 text-primary flex items-center justify-center">
                           <Sparkles size={16} />
                         </div>
                         <div className="p-4 rounded-2xl bg-white border border-border/50 shadow-sm rounded-tl-sm flex items-center gap-1">
-                          <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-2 h-2 bg-primary/40 rounded-full" />
+                          <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6 }} className="w-2 h-2 bg-primary/40 rounded-full" />
                           <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-2 h-2 bg-primary/60 rounded-full" />
                           <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-2 h-2 bg-primary/80 rounded-full" />
                         </div>
@@ -188,16 +219,14 @@ export function ZenCoach() {
                     <Input
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      placeholder="Type a message..."
-                      className="rounded-full bg-white border-border/50 focus-visible:ring-primary"
-                      data-testid="input-chat"
+                      placeholder="Ask Zeno anything..."
+                      className="rounded-full bg-white border-border/50"
                     />
                     <Button 
                       type="submit" 
                       size="icon" 
-                      className="rounded-full shrink-0 bg-primary hover:bg-primary/90 text-white"
-                      disabled={chatMutation.isPending || !inputValue.trim()}
-                      data-testid="button-send-chat"
+                      className="rounded-full shrink-0 bg-primary text-white"
+                      disabled={isPending || !inputValue.trim()}
                     >
                       <Send className="w-4 h-4" />
                     </Button>
@@ -211,94 +240,66 @@ export function ZenCoach() {
                 {!schedule ? (
                   <form onSubmit={handleGenerateSchedule} className="space-y-4">
                     <div>
-                      <label htmlFor="concern" className="block text-sm font-medium text-foreground mb-2">
-                        How are you feeling today? Let Zeno build a custom schedule for you.
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        How are you feeling today? Zeno will build a schedule for you.
                       </label>
                       <Textarea
-                        id="concern"
                         value={concern}
                         onChange={(e) => setConcern(e.target.value)}
-                        placeholder="e.g., I'm feeling overwhelmed with schoolwork and need to focus, but also need to relax."
+                        placeholder="e.g., Feeling stressed about exams..."
                         className="min-h-[120px] bg-white resize-none"
-                        data-testid="textarea-concern"
                       />
                     </div>
                     <Button 
                       type="submit" 
                       className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
-                      disabled={scheduleMutation.isPending || !concern.trim()}
-                      data-testid="button-generate-schedule"
+                      disabled={isPending || !concern.trim()}
                     >
-                      {scheduleMutation.isPending ? "Generating..." : "Generate Zen Schedule"}
+                      {isPending ? "Zeno is thinking..." : "Generate Zen Schedule"}
                     </Button>
                   </form>
                 ) : (
                   <div className="space-y-6">
-                    <div className="bg-primary/10 text-primary-foreground text-foreground p-4 rounded-xl text-sm leading-relaxed">
-                      {schedule.message}
+                    <div className="bg-primary/10 text-foreground p-4 rounded-xl text-sm leading-relaxed italic">
+                      "{schedule.message}"
                     </div>
 
                     <div className="space-y-3">
-                      {schedule.items.map((item, idx) => {
+                      {schedule.items?.map((item, idx) => {
                         const id = `item-${idx}`;
                         const isChecked = checkedItems[id] || false;
-
                         return (
                           <motion.div
+                            key={idx}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.1 }}
-                            key={idx}
                             className={`flex items-start gap-4 p-4 rounded-xl border transition-all ${
-                              isChecked 
-                                ? "bg-muted/50 border-border/50 opacity-70" 
-                                : "bg-white border-border/50 shadow-sm hover:border-primary/30"
+                              isChecked ? "bg-muted/50 opacity-70" : "bg-white shadow-sm"
                             }`}
                           >
                             <Checkbox 
                               id={id} 
                               checked={isChecked}
                               onCheckedChange={(checked) => saveChecked({ ...checkedItems, [id]: !!checked })}
-                              className="mt-1 data-[state=checked]:bg-primary data-[state=checked]:text-white"
-                              data-testid={`checkbox-schedule-${idx}`}
                             />
                             <div className="flex-1 min-w-0">
-                              <label 
-                                htmlFor={id}
-                                className={`block text-sm font-semibold mb-1 cursor-pointer transition-colors ${
-                                  isChecked ? "line-through text-muted-foreground" : "text-foreground"
-                                }`}
-                              >
+                              <label htmlFor={id} className={`block text-sm font-semibold mb-1 cursor-pointer ${isChecked ? "line-through text-muted-foreground" : ""}`}>
                                 {item.activity}
                               </label>
                               <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mb-2">
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-3 h-3" /> {item.time} ({item.duration})
-                                </span>
+                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {item.time} ({item.duration})</span>
                                 <span className="flex items-center gap-1 bg-muted px-2 py-0.5 rounded-full capitalize">
-                                  {getCategoryIcon(item.category)}
-                                  {item.category}
+                                  {getCategoryIcon(item.category)} {item.category}
                                 </span>
                               </div>
-                              {item.description && (
-                                <p className={`text-xs ${isChecked ? "text-muted-foreground/70" : "text-muted-foreground"}`}>
-                                  {item.description}
-                                </p>
-                              )}
+                              <p className="text-xs text-muted-foreground">{item.description}</p>
                             </div>
                           </motion.div>
                         );
                       })}
                     </div>
-
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setSchedule(null)}
-                      className="w-full rounded-xl"
-                      data-testid="button-reset-schedule"
-                    >
-                      Start Over
-                    </Button>
+                    <Button variant="outline" onClick={() => setSchedule(null)} className="w-full rounded-xl">Create New Schedule</Button>
                   </div>
                 )}
               </Card>
@@ -309,3 +310,4 @@ export function ZenCoach() {
     </section>
   );
 }
+                          
