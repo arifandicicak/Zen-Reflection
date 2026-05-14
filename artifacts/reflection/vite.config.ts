@@ -4,27 +4,11 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const rawPort = process.env.PORT;
+// Bikin port jadi opsional, default ke 5173 kalau PORT nggak ada
+const port = process.env.PORT ? Number(process.env.PORT) : 5173;
 
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+// Bikin basePath default ke "/" kalau BASE_PATH nggak ada
+const basePath = process.env.BASE_PATH || "/";
 
 export default defineConfig({
   base: basePath,
@@ -60,7 +44,7 @@ export default defineConfig({
   },
   server: {
     port,
-    strictPort: true,
+    strictPort: false, // Gue ubah ke false biar nggak bentrok di Vercel
     host: "0.0.0.0",
     allowedHosts: true,
     fs: {
