@@ -1,2 +1,21 @@
 User-agent: *
 Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# Sitemaps (Ganti URL ini dengan URL Vercel lo yang asli)
+Sitemap: https://jangkrik02.vercel.app/sitemap.xml
+
+# Disallow sensitive folders (Optional)
+Disallow: /private/
+Disallow: /api/config/
