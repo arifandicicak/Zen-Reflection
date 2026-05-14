@@ -89,7 +89,7 @@ export function ZenCoach() {
 
       if (!res.ok) {
         // Tampilkan error kalau API Key salah atau limit abis
-        alert(`Error Zeno: ${data.details || data.error}`);
+        alert(data.details);
         return;
       }
 
@@ -120,7 +120,7 @@ export function ZenCoach() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(`Gagal generate jadwal: ${data.details || data.error}`);
+        alert(`Failed to generate schedule: ${data.details || data.error}`);
         return;
       }
 
