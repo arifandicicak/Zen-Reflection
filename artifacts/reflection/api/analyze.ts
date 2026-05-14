@@ -22,7 +22,7 @@ When someone shares pain, bullying, or struggles:
 function getGemini() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error("API KEY IS EMPTY: Jangkrik, you haven't installed GEMINI_API_KEY in Vercel's Environment Variables!");
+    throw new Error("API KEY IS EMPTY: Jangkrik, pasang GEMINI_API_KEY dulu di Environment Variables Vercel!");
   }
   return new GoogleGenerativeAI(apiKey);
 }
@@ -45,23 +45,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { type, messages, concern } = req.body;
     const genAI = getGemini();
 
-    // PAKAI MODEL TERBARU (GEMINI 3 SERIES)
+    // PAKAI MODEL TERBARU (GEMINI 3 SERIES / 2.0 FLASH)
     const MODEL_NAME = "gemini-2.0-flash";
 
+    // --- LOGIKA CHAT ---
     if (type === "chat") {
       const model = genAI.getGenerativeModel({
         model: MODEL_NAME,
         systemInstruction: ZEN_SYSTEM_PROMPT,
       });
 
-      // Menyesuaikan format history agar kompatibel dengan SDK terbaru
-      const history = (messages || []).slice(0, -1).map((m) => ({
+      // Mapping history agar sesuai format Google
+      let cleanHistory = (messages || []).map((m) => ({
         role: m.role === "assistant" || m.role === "model" ? "model" : "user",
         parts: [{ text: m.content || m.text || "" }],
       }));
 
+      // FIX ERROR: Cari pesan pertama dari USER (Google melarang AI bicara duluan di history)
+      const firstUserIndex = cleanHistory.findIndex(m => m.role === 'user');
+      
+      // Ambil history dari chat user pertama sampai sebelum chat terakhir
+      const finalHistory = firstUserIndex !== -1 
+        ? cleanHistory.slice(firstUserIndex, -1) 
+        : [];
+
       const lastMessage = messages[messages.length - 1];
-      const chat = model.startChat({ history });
+      const chat = model.startChat({ history: finalHistory });
       
       const result = await chat.sendMessage(lastMessage.content || lastMessage.text);
       const response = await result.response;
@@ -70,6 +79,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ reply });
     }
 
+    // --- LOGIKA SCHEDULE ---
     if (type === "schedule" && concern) {
       const model = genAI.getGenerativeModel({ 
         model: MODEL_NAME,
@@ -79,21 +89,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const prompt = `Based on: "${concern}", create a daily schedule. Return ONLY JSON structure: { "message": "...", "items": [...] }`;
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
+      
+      // Pembersihan tag markdown JSON
       const cleaned = text.replace(/```json|```/g, "").trim();
       
       return res.status(200).json(JSON.parse(cleaned));
     }
 
-    return res.status(400).json({ error: "Type gak jelas nih." });
+    return res.status(400).json({ error: "Request type not recognized." });
 
   } catch (err: any) {
-    // --- INI FITUR ERROR YANG LO MINTA ---
     console.error("ANALYZER ERROR:", err.message);
     
+    // Kirim detail error ke frontend
     return res.status(500).json({ 
       error: "Zeno lagi Error!", 
-      details: err.message, // Detail error ini yang bakal lo tampilin di web
-      tip: "Coba cek apakah API Key di Vercel udah bener atau kuota Google AI lo habis."
+      details: err.message,
+      tip: "Cek API Key di Vercel atau kuota Google AI lo (Error 429 = Kuota Abis)."
     });
   }
-        }
+}
