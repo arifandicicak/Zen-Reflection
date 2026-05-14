@@ -22,93 +22,78 @@ When someone shares pain, bullying, or struggles:
 function getGemini() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not set in Environment Variables");
+    throw new Error("API KEY IS EMPTY: Jangkrik, you haven't installed GEMINI_API_KEY in Vercel's Environment Variables!");
   }
   return new GoogleGenerativeAI(apiKey);
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // --- BAGIAN TAMBAHAN UNTUK FIX CORS ---
+  // --- FIX CORS & BROWSER PREFLIGHT ---
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // Handle preflight request browser
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
-  // --------------------------------------
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed. Use POST." });
+    return res.status(405).json({ error: "Use POST, Bro!" });
   }
 
-  const { type, messages, concern } = req.body as {
-    type: "chat" | "schedule";
-    messages?: Array<{ role: "user" | "assistant"; content: string }>;
-    concern?: string;
-  };
-
   try {
+    const { type, messages, concern } = req.body;
     const genAI = getGemini();
 
-    // LOGIKA UNTUK CHAT BIASA
-    if (type === "chat" && messages && messages.length > 0) {
+    // PAKAI MODEL TERBARU (GEMINI 3 SERIES)
+    const MODEL_NAME = "gemini-2.0-flash";
+
+    if (type === "chat") {
       const model = genAI.getGenerativeModel({
-        model: "gemini-3-flash-preview",
+        model: MODEL_NAME,
         systemInstruction: ZEN_SYSTEM_PROMPT,
       });
 
-      const history = messages.slice(0, -1).map((m) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }],
+      // Menyesuaikan format history agar kompatibel dengan SDK terbaru
+      const history = (messages || []).slice(0, -1).map((m) => ({
+        role: m.role === "assistant" || m.role === "model" ? "model" : "user",
+        parts: [{ text: m.content || m.text || "" }],
       }));
 
       const lastMessage = messages[messages.length - 1];
       const chat = model.startChat({ history });
-      const result = await chat.sendMessage(lastMessage.content);
-      const reply = result.response.text();
+      
+      const result = await chat.sendMessage(lastMessage.content || lastMessage.text);
+      const response = await result.response;
+      const reply = response.text();
 
       return res.status(200).json({ reply });
     }
 
-    // LOGIKA UNTUK DAILY SCHEDULE
     if (type === "schedule" && concern) {
       const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
+        model: MODEL_NAME,
         systemInstruction: "You are a mindful wellness scheduler. Return ONLY valid JSON."
       });
 
-      const prompt = `Based on this emotional concern: "${concern}", create a calming daily schedule (6-8 activities).
-Return ONLY a JSON object with this structure:
-{
-  "message": "A warm message",
-  "items": [
-    { "time": "HH:MM", "activity": "Name", "duration": "X min", "category": "meditation/rest/etc", "description": "Details" }
-  ]
-}
-No markdown blocks, no extra text.`;
-
+      const prompt = `Based on: "${concern}", create a daily schedule. Return ONLY JSON structure: { "message": "...", "items": [...] }`;
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
-
-      try {
-        // Pembersihan output AI dari markdown ```json ... ```
-        const cleaned = text.replace(/```json|```/g, "").trim();
-        const parsed = JSON.parse(cleaned);
-        return res.status(200).json(parsed);
-      } catch (parseError) {
-        console.error("JSON Parse Error:", text);
-        return res.status(500).json({ error: "AI sent invalid format" });
-      }
+      const cleaned = text.replace(/```json|```/g, "").trim();
+      
+      return res.status(200).json(JSON.parse(cleaned));
     }
 
-    return res.status(400).json({ error: "Invalid request type or missing fields" });
+    return res.status(400).json({ error: "Type gak jelas nih." });
+
   } catch (err: any) {
-    console.error("Analyze error:", err.message);
+    // --- INI FITUR ERROR YANG LO MINTA ---
+    console.error("ANALYZER ERROR:", err.message);
+    
     return res.status(500).json({ 
-      error: "AI Service Error", 
-      details: err.message 
+      error: "Zeno lagi Error!", 
+      details: err.message, // Detail error ini yang bakal lo tampilin di web
+      tip: "Coba cek apakah API Key di Vercel udah bener atau kuota Google AI lo habis."
     });
   }
-}
+        }
