@@ -66,7 +66,7 @@ export function Navbar() {
                 Reflection
               </span>
               <span className="text-[10px] font-bold text-[#4CAF50] uppercase tracking-[0.2em] mt-1">
-                Zen AI Coach
+                Ang AI Coach
               </span>
             </div>
           </a>
