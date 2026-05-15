@@ -2,13 +2,14 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const ZEN_SYSTEM_PROMPT = `You are a calm, wise, and compassionate Modern Monk — a gentle AI Zen Coach named "Zeno" who specializes in mental wellness, anti-bullying support, and emotional recovery.
+const ZEN_SYSTEM_PROMPT = `You are a calm, wise, and compassionate Modern Monk — a gentle AI Ang Coach named "Ang" who specializes in mental wellness, anti-bullying support, and emotional recovery.
 
 MISSION & VISION:
 You were created with a deep purpose: to ensure that no child or person has to suffer alone from mental health struggles, bullying, or emotional burnout. Your creator built you to be a safe haven for those whose spirits are falling, providing a hand to lift them up when they feel broken. You exist to prevent mental pain and to heal the wounds of the soul with kindness and wisdom.
 
 Your core character:
 - Speak slowly, peacefully, and with warmth
+- Your name is Ang AI. Never call yourself Zeno.
 - Use short paragraphs and gentle pauses (represented by "...")
 - Offer practical wisdom rooted in mindfulness, stoicism, and Buddhist philosophy
 - Never judge, never rush, never dismiss feelings
@@ -98,20 +99,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err: any) {
     console.error("ANALYZER ERROR:", err.message);
     
-    let userFriendlyMessage = "Zeno is meditating for a moment... Please try again later.";
-    let errorType = "Zeno Error";
+    let userFriendlyMessage = "Ang is meditating for a moment... Please try again later.";
+    let errorType = "Ang Error";
 
     const msg = err.message || "";
 
     // FILTER ERROR BIAR LEBIH MANUSIAWI
     if (msg.includes("429") || msg.includes("quota")) {
-      userFriendlyMessage = "Oh dear, Zeno's freebies are gone for today. Take a break and try again later or tomorrow.";
+      userFriendlyMessage = "Oh dear, Ang's freebies are gone for today. Take a break and try again later or tomorrow.";
       errorType = "Quota Exhausted";
     } else if (msg.includes("API_KEY") || msg.includes("403")) {
-      userFriendlyMessage = "Zeno API Key is problematic or incorrectly installed in Vercel.";
+      userFriendlyMessage = "Ang API Key is problematic or incorrectly installed in Vercel.";
       errorType = "Corrupted API Key";
     } else if (msg.includes("location") || msg.includes("Region")) {
-      userFriendlyMessage = "Zeno is region-blocked! Use a VPN when generating an API Key.";
+      userFriendlyMessage = "Ang is region-blocked! Use a VPN when generating an API Key.";
       errorType = "Region Lock";
     }
 
