@@ -14,7 +14,7 @@ User-agent: CCBot
 Allow: /
 
 # Sitemaps (Ganti URL ini dengan URL Vercel lo yang asli)
-Sitemap: https://zen-reflection.vercel.app/sitemap.xml
+Sitemap: https://ang-ai.vercel.app/sitemap.xml
 
 # Disallow sensitive folders (Optional)
 Disallow: /private/
