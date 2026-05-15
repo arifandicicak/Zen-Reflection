@@ -22,7 +22,7 @@ const projects = [
   },
   {
     title: "Reflection",
-    description: "The Zen Coach & Portfolio platform you're exploring. Designed for mental wellness and professional showcasing.",
+    description: "The Ang Coach & Portfolio platform you're exploring. Designed for mental wellness and professional showcasing.",
     tech: ["React", "Framer Motion", "Tailwind"],
     link: "#", // Current site
     color: "bg-white",
