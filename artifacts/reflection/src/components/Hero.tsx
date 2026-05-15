@@ -71,7 +71,7 @@ export function Hero() {
             onClick={() => scrollToSection("#zen")}
             data-testid="button-meet-zeno"
           >
-            Meet Zeno <ArrowRight className="ml-2 h-4 w-4" />
+            Meet Ang <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
           <Button
             size="lg"
