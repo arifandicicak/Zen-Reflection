@@ -124,7 +124,6 @@ export function ZenCoach() {
 
   return (
     <section id="ang" className="py-20 relative overflow-hidden bg-white">
-      {/* Background Decor - Pointer events none agar tidak ganggu scroll */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -144,24 +143,23 @@ export function ZenCoach() {
 
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="chat" className="w-full">
-            {/* Fixed TabsList: max-w diperkecil agar tidak tumpah di HP */}
-            <TabsList className="grid w-full max-w-[340px] md:max-w-md mx-auto grid-cols-2 mb-8 bg-gray-100 p-1 rounded-xl border border-gray-200/50">
+            {/* FIXED TAB LIST: h-auto and items-stretch ensures background fits buttons */}
+            <TabsList className="grid w-full max-w-[340px] md:max-w-md mx-auto grid-cols-2 mb-10 bg-gray-100 p-1.5 rounded-2xl border border-gray-200/50 h-auto items-stretch">
               <TabsTrigger 
                 value="chat" 
-                className="rounded-lg py-2.5 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-[#4CAF50] data-[state=active]:shadow-sm transition-all flex items-center gap-2"
+                className="rounded-xl py-3 text-xs md:text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-[#4CAF50] data-[state=active]:shadow-md transition-all flex items-center justify-center gap-2"
               >
                 <MessageSquare className="w-3.5 h-3.5" /> Counseling
               </TabsTrigger>
               <TabsTrigger 
                 value="schedule" 
-                className="rounded-lg py-2.5 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-[#4CAF50] data-[state=active]:shadow-sm transition-all flex items-center gap-2"
+                className="rounded-xl py-3 text-xs md:text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-[#4CAF50] data-[state=active]:shadow-md transition-all flex items-center justify-center gap-2"
               >
                 <Calendar className="w-3.5 h-3.5" /> Ang Schedule
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="chat" className="mt-0 outline-none">
-              {/* Fixed Card Height: h-[550px] lebih aman untuk layar HP standar */}
               <Card className="border-2 border-gray-100 bg-white shadow-2xl rounded-3xl overflow-hidden h-[550px] md:h-[650px] flex flex-col">
                 <div className="bg-[#F0FFF4] p-5 border-b border-border/50 flex items-center gap-4">
                   <div className="w-11 h-11 rounded-2xl bg-[#4CAF50] text-white flex items-center justify-center shadow-lg shadow-green-100">
@@ -193,7 +191,7 @@ export function ZenCoach() {
                         <div className={`p-3.5 rounded-2xl text-sm md:text-base leading-relaxed ${
                           msg.role === "user" 
                             ? "bg-[#2D4F3F] text-white rounded-tr-none" 
-                            : "bg-white border-2 border-gray-50 shadow-sm rounded-tl-none text-[#2D4F3F]"
+                            : "bg-white border-2 border-gray-100 shadow-sm rounded-tl-none text-[#2D4F3F]"
                         }`}>
                           {msg.content}
                         </div>
