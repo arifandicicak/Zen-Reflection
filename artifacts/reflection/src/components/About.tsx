@@ -81,11 +81,11 @@ export function About() {
                   Now, my focus is on building a &ldquo;Digital Monk&rdquo;&mdash;an AI system that is not only smart, but also brings peace and helps mental health for fellow teenagers.
                 </p>
                 <p>
-                  Zen Reflection was born out of a profound necessity to protect the most vulnerable parts of our humanity. 
+                  Ang Reflection was born out of a profound necessity to protect the most vulnerable parts of our humanity. 
                   I created this AI because I believe that no one, especially children, should ever have to endure the crushing weight of mental exhaustion or the scars of bullying alone. 
-                  We live in a world where it's easy to feel invisible, where spirits can fall and stay down. Zen Reflection is my stand against that pain. 
-                  It is a digital sanctuary designed to catch you before you hit the ground, providing wisdom and a peaceful space to breathe. 
-                  <strong>My goal is simple: to ensure that your mental health is never ignored, and your light never goes out.</strong>
+                  We live in a world where it's easy to feel invisible, where spirits can fall and stay down. Ang Reflection is my stand against that pain. 
+                  It is a digital sanctuary designed to catch you before you hit the ground, providing wisdom and a peaceful space to breathe.  
+                  <strong> My goal is simple: to ensure that your mental health is never ignored, and your light never goes out.</strong>
                 </p>
               </div>
 
