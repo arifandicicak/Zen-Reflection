@@ -29,7 +29,7 @@ const getCategoryIcon = (category: string) => {
 export function ZenCoach() {
   // --- STATE ---
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hello! I'm Zeno. I'm here to help you find a moment of peace. How are you feeling today?" }
+    { role: "assistant", content: "Hello! I'm Ang. I'm here to help you find a moment of peace. How are you feeling today?" }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [concern, setConcern] = useState("");
@@ -48,19 +48,19 @@ export function ZenCoach() {
 
   // Load status checklist schedule dari local storage
   useEffect(() => {
-    const saved = localStorage.getItem("zen-schedule-checked");
+    const saved = localStorage.getItem("ang-schedule-checked");
     if (saved) {
       try {
         setCheckedItems(JSON.parse(saved));
       } catch (e) {
-        console.error("Gagal load history checklist");
+        console.error("Failed to load history checklist");
       }
     }
   }, []);
 
   const saveChecked = (newChecked: Record<string, boolean>) => {
     setCheckedItems(newChecked);
-    localStorage.setItem("zen-schedule-checked", JSON.stringify(newChecked));
+    localStorage.setItem("ang-schedule-checked", JSON.stringify(newChecked));
   };
 
   // --- HANDLER CHAT (Gemini 3 Power) ---
@@ -134,7 +134,7 @@ export function ZenCoach() {
   };
 
   return (
-    <section id="zen" className="py-24 relative overflow-hidden">
+    <section id="ang" className="py-24 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -147,7 +147,7 @@ export function ZenCoach() {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Meet Zeno</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-            Your personal AI Zen Coach. Chat for immediate guidance or generate a daily schedule to find balance.
+            Your personal AI Ang Coach. Chat for immediate guidance or generate a daily schedule to find balance.
           </p>
           <div className="w-16 h-1 bg-primary mx-auto rounded-full" />
         </motion.div>
@@ -170,8 +170,8 @@ export function ZenCoach() {
                     <Sparkles className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">Zeno</h3>
-                    <p className="text-xs text-muted-foreground">AI Zen Coach</p>
+                    <h3 className="font-semibold text-foreground">Ang</h3>
+                    <p className="text-xs text-muted-foreground">AI Ang Coach</p>
                   </div>
                 </div>
 
@@ -219,7 +219,7 @@ export function ZenCoach() {
                     <Input
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
-                      placeholder="Ask Zeno anything..."
+                      placeholder="Ask Ang anything..."
                       className="rounded-full bg-white border-border/50"
                     />
                     <Button 
@@ -241,7 +241,7 @@ export function ZenCoach() {
                   <form onSubmit={handleGenerateSchedule} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">
-                        How are you feeling today? Zeno will build a schedule for you.
+                        How are you feeling today? Ang will build a schedule for you.
                       </label>
                       <Textarea
                         value={concern}
@@ -255,7 +255,7 @@ export function ZenCoach() {
                       className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl"
                       disabled={isPending || !concern.trim()}
                     >
-                      {isPending ? "Zeno is thinking..." : "Generate Zen Schedule"}
+                      {isPending ? "Ang is thinking..." : "Generate Ang Schedule"}
                     </Button>
                   </form>
                 ) : (
