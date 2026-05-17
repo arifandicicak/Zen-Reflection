@@ -132,7 +132,7 @@ export function Contact() {
                       Arifandi Tanggahma
                     </h5>
                     <p className="text-[11px] text-gray-500 leading-tight mt-0.5 truncate">
-                      Fullstack Developer & AI Engineer
+                      Game Developer & Junior AI Engineer
                     </p>
                   </div>
                 </div>
