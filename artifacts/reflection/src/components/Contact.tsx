@@ -114,13 +114,13 @@ export function Contact() {
               </div>
             </div>
 
-            {/* LinkedIn Public Profile Badge Kustom (Tampilan menyatu & 100% Berhasil) */}
+            {/* LinkedIn Public Profile Badge Kustom (Lebar Responsif Full di HP) */}
             <div className="pt-2">
               <a 
                 href="https://id.linkedin.com/in/arifandi-tanggahma-70876a3b5?trk=profile-badge"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block max-w-[280px] bg-white border border-[#E8F5E9] rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group/link"
+                className="block w-full md:max-w-[280px] bg-white border border-[#E8F5E9] rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group/link"
               >
                 <div className="flex items-center gap-3 mb-3">
                   {/* Avatar Bulat Inisial Nama */}
