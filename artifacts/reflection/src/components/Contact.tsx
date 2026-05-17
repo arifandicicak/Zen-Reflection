@@ -94,7 +94,7 @@ export function Contact() {
 
             <div>
               <h4 className="text-xs font-bold text-[#2D4F3F] mb-4 uppercase tracking-widest">Connect with me</h4>
-              <div className="flex gap-3">
+              <div className="flex gap-3 mb-6">
                 {[
                   { icon: <Github size={18} />, href: "https://github.com/arifandicicak", label: "Github" },
                   { icon: <Instagram size={18} />, href: "https://www.instagram.com/look.arix?igsh=MWc3Z3lreGl0ZmNpOQ==", label: "Instagram" },
@@ -111,6 +111,26 @@ export function Contact() {
                     {social.icon}
                   </a>
                 ))}
+              </div>
+            </div>
+
+            {/* LinkedIn Public Profile Badge Section */}
+            <div className="pt-2 flex justify-start items-center">
+              <div 
+                className="badge-base LI-profile-badge" 
+                data-locale="in_ID" 
+                data-size="medium" 
+                data-theme="light" 
+                data-type="HORIZONTAL" 
+                data-vanity="arifandi-tanggahma-70876a3b5" 
+                data-version="v1"
+              >
+                <a 
+                  className="badge-base__link LI-simple-link" 
+                  href="https://id.linkedin.com/in/arifandi-tanggahma-70876a3b5?trk=profile-badge"
+                >
+                  Arifandi Tanggahma
+                </a>
               </div>
             </div>
           </motion.div>
