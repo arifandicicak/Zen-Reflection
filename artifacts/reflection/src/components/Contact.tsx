@@ -27,19 +27,45 @@ export function Contact() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast({
-        title: "Message Sent!",
-        description: "Thanks for reaching out, Arifandi will get back to you soon.",
+    const formData = new FormData(e.currentTarget);
+    
+    // PENTING: Ganti string di bawah ini dengan Access Key Web3Forms!
+    formData.append("access_key", "92c2c0de-73bd-48d8-a0ec-d0fd861c370e");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
       });
-      (e.target as HTMLFormElement).reset();
-    }, 1000);
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Message Sent Successfully!",
+          description: "Thanks for reaching out, Arifandi will get back to you soon.",
+        });
+        (e.target as HTMLFormElement).reset();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Submission Failed",
+          description: data.message || "Something went wrong, please try again.",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Network error. Please check your connection and try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -159,17 +185,18 @@ export function Contact() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-[#2D4F3F] uppercase ml-1">Name</label>
-                    <Input required placeholder="Arifandi" className="rounded-xl border-[#E8F5E9] focus:border-[#87EBA0] focus:ring-[#87EBA0]" />
+                    <Input name="name" required placeholder="Arifandi" className="rounded-xl border-[#E8F5E9] focus:border-[#87EBA0] focus:ring-[#87EBA0]" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-[#2D4F3F] uppercase ml-1">Email</label>
-                    <Input type="email" required placeholder="your@email.com" className="rounded-xl border-[#E8F5E9] focus:border-[#87EBA0] focus:ring-[#87EBA0]" />
+                    <Input name="email" type="email" required placeholder="your@email.com" className="rounded-xl border-[#E8F5E9] focus:border-[#87EBA0] focus:ring-[#87EBA0]" />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-[#2D4F3F] uppercase ml-1">Message</label>
                   <Textarea 
+                    name="message"
                     required 
                     placeholder="Let's build something amazing together..." 
                     className="min-h-[120px] rounded-2xl border-[#E8F5E9] focus:border-[#87EBA0] focus:ring-[#87EBA0] resize-none"
