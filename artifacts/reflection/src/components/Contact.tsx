@@ -114,24 +114,36 @@ export function Contact() {
               </div>
             </div>
 
-            {/* LinkedIn Public Profile Badge Section */}
-            <div className="pt-2 flex justify-start items-center">
-              <div 
-                className="badge-base LI-profile-badge" 
-                data-locale="in_ID" 
-                data-size="medium" 
-                data-theme="light" 
-                data-type="HORIZONTAL" 
-                data-vanity="arifandi-tanggahma-70876a3b5" 
-                data-version="v1"
+            {/* LinkedIn Public Profile Badge Kustom (Tampilan menyatu & 100% Berhasil) */}
+            <div className="pt-2">
+              <a 
+                href="https://id.linkedin.com/in/arifandi-tanggahma-70876a3b5?trk=profile-badge"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block max-w-[280px] bg-white border border-[#E8F5E9] rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group/link"
               >
-                <a 
-                  className="badge-base__link LI-simple-link" 
-                  href="https://id.linkedin.com/in/arifandi-tanggahma-70876a3b5?trk=profile-badge"
-                >
-                  Arifandi Tanggahma
-                </a>
-              </div>
+                <div className="flex items-center gap-3 mb-3">
+                  {/* Avatar Bulat Inisial Nama */}
+                  <div className="w-11 h-11 rounded-full bg-[#E8F5E9] text-[#1B5E20] font-bold flex items-center justify-center text-base shadow-inner shrink-0">
+                    AT
+                  </div>
+                  <div className="overflow-hidden">
+                    <h5 className="text-sm font-bold text-gray-800 group-hover/link:text-[#4CAF50] transition-colors truncate">
+                      Arifandi Tanggahma
+                    </h5>
+                    <p className="text-[11px] text-gray-500 leading-tight mt-0.5 truncate">
+                      Fullstack Developer & AI Engineer
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">LinkedIn</span>
+                  <span className="text-xs font-bold text-[#0A66C2] bg-[#0A66C2]/5 px-3 py-1 rounded-full group-hover/link:bg-[#0A66C2] group-hover/link:text-white transition-all duration-300">
+                    View Profile
+                  </span>
+                </div>
+              </a>
             </div>
           </motion.div>
 
